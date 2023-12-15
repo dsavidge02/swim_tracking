@@ -108,7 +108,7 @@ class KalmanFilter:
 		count = 0
 		for c in range(predicted_position[0]-search_radius_col, predicted_position[0] + search_radius_col + 1):
 			for r in range(predicted_position[1] - search_radius_row, predicted_position[1] + search_radius_row + 1 + self.extend):
-				if image[r,c] > 5:
+				if 0 <= c < image.shape[1] and 0 <= r < image.shape[0]:
 					sum_x += c
 					sum_y += r
 					count += 1
@@ -194,7 +194,7 @@ def run_script(person, stroke, start_point=None, s1=None, s2=None):
 	image_save_loc = f'images/{person}/{stroke}/Tracked/Kalman/'
 	write_points_loc = f'results/{person}/{stroke}'
 	images = read_images(images_to_track, extension = '.jpg', grayscale = True, unsorted = True)
-	if start_point == None:
+	if start_point is None:
 		print("Please find a starting frame using Filtered Kalman images")
 		sys.exit()
 	images = images[start_point:]

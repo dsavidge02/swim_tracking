@@ -189,43 +189,77 @@ def choose_starting_pixels(images):
 	display_image(images[1])
 	sys.exit()
 
+def run_script(person, stroke, start_point=None, s1=None, s2=None):
+	images_to_track = f'images/{person}/{stroke}/Filtered/Kalman'
+	images_to_overlay = f'images/{person}/{stroke}'
+	image_save_loc = f'images/{person}/{stroke}/Tracked/Kalman/'
+	write_points_loc = f'results/{person}/{stroke}'
+	images = read_images(images_to_track, extension = '.jpg', grayscale = True, unsorted = True)
+	if start_point == None:
+		print("Please find a starting frame using Filtered Kalman images")
+		sys.exit()
+	images = images[start_point:]
+	if s1 is None or s2 is None:
+		print("Choosing a starting pixel from the first 2 frames")
+		choose_starting_pixels(images)
 
-#SAMPLE USAGE
-person = 'Jake'
-stroke = 'Free'
-images_to_track = f'images/{person}/{stroke}/Filtered/Kalman'
-start_point = 96
-images_to_overlay = f'images/{person}/{stroke}'
-image_save_loc = f'images/{person}/{stroke}/Tracked/Kalman/'
-write_points_loc = f'results/{person}/{stroke}'
 
-#FIRST NEED TO LOCATE THE PIXELS IN THE FIRST TWO DESIRED FRAMES
-images = read_images(images_to_track, extension = '.jpg', grayscale = True, unsorted = True)
-images = images[start_point:]
+	sv_0, sigma_0, Q, R, Phi, H = initialize_Kalman_parameters(s1, s2)
+	patch_size = 5
+	kalman_filters = []
+	init_patches = get_initial_patches(images[0], s1, patch_size)
+	for i, s_0 in enumerate(sv_0):
+		kf = KalmanFilter(Phi,H,Q,R,sigma_0, s_0, init_patches[i])
+		kalman_filters.append(kf)
+	all_tracked_points = track_all_points(kalman_filters, images, patch_size, update_patch = True, dynamic_patch_size = False)
+	write_tracked_points(s1, s2, all_tracked_points, write_points_loc)
 
-#COMMENT OUT ONCE POINTS ARE PICKED
-#choose_starting_pixels(images)
+	i = 2
+	images = read_images(images_to_overlay, extension = '.jpg', grayscale = False, unsorted = True, shift = 2)
+	images = images[start_point:]
+	overlay_points(images[0], s1, grayscale = False, file_loc = image_save_loc, filename = 'frame0')
+	overlay_points(images[1], s2, grayscale = False, file_loc = image_save_loc, filename = 'frame1')
+	for image, points in zip(images[2:], all_tracked_points):
+		img_str = f'frame{i}'
+		overlay_points(image, points, grayscale = False, file_loc = image_save_loc, filename = img_str)
+		i+=1
 
-#ONCE POINTS ARE PICKED REPLACE
-s1 = np.array([[501,1030]])
-s2 = np.array([[501,1031]])
+# #SAMPLE USAGE
+# person = 'Sierra'
+# stroke = 'Free'
+# images_to_track = f'images/{person}/{stroke}/Filtered/Kalman'
+# start_point = 107
+# images_to_overlay = f'images/{person}/{stroke}'
+# image_save_loc = f'images/{person}/{stroke}/Tracked/Kalman/'
+# write_points_loc = f'results/{person}/{stroke}'
 
-sv_0, sigma_0, Q, R, Phi, H = initialize_Kalman_parameters(s1, s2)
-patch_size = 5
-kalman_filters = []
-init_patches = get_initial_patches(images[0], s1, patch_size)
-for i, s_0 in enumerate(sv_0):
-	kf = KalmanFilter(Phi,H,Q,R,sigma_0, s_0, init_patches[i])
-	kalman_filters.append(kf)
-all_tracked_points = track_all_points(kalman_filters, images, patch_size, update_patch = True, dynamic_patch_size = False)
-write_tracked_points(s1, s2, all_tracked_points, write_points_loc)
+# #FIRST NEED TO LOCATE THE PIXELS IN THE FIRST TWO DESIRED FRAMES
+# images = read_images(images_to_track, extension = '.jpg', grayscale = True, unsorted = True)
+# images = images[start_point:]
 
-i = 2
-images = read_images(images_to_overlay, extension = '.jpg', grayscale = False, unsorted = True, shift = 2)
-images = images[start_point:]
-overlay_points(images[0], s1, grayscale = False, file_loc = image_save_loc, filename = 'frame0')
-overlay_points(images[1], s2, grayscale = False, file_loc = image_save_loc, filename = 'frame1')
-for image, points in zip(images[2:], all_tracked_points):
-	img_str = f'frame{i}'
-	overlay_points(image, points, grayscale = False, file_loc = image_save_loc, filename = img_str)
-	i+=1
+# #COMMENT OUT ONCE POINTS ARE PICKED
+# #choose_starting_pixels(images)
+
+# #ONCE POINTS ARE PICKED REPLACE
+# s1 = np.array([[547,1022]])
+# s2 = np.array([[547,1023]])
+
+# sv_0, sigma_0, Q, R, Phi, H = initialize_Kalman_parameters(s1, s2)
+# patch_size = 5
+# kalman_filters = []
+# init_patches = get_initial_patches(images[0], s1, patch_size)
+# for i, s_0 in enumerate(sv_0):
+# 	kf = KalmanFilter(Phi,H,Q,R,sigma_0, s_0, init_patches[i])
+# 	kalman_filters.append(kf)
+# all_tracked_points = track_all_points(kalman_filters, images, patch_size, update_patch = True, dynamic_patch_size = False)
+# write_tracked_points(s1, s2, all_tracked_points, write_points_loc)
+
+# i = 2
+# images = read_images(images_to_overlay, extension = '.jpg', grayscale = False, unsorted = True, shift = 2)
+# images = images[start_point:]
+# overlay_points(images[0], s1, grayscale = False, file_loc = image_save_loc, filename = 'frame0')
+# overlay_points(images[1], s2, grayscale = False, file_loc = image_save_loc, filename = 'frame1')
+# for image, points in zip(images[2:], all_tracked_points):
+# 	img_str = f'frame{i}'
+# 	overlay_points(image, points, grayscale = False, file_loc = image_save_loc, filename = img_str)
+# 	i+=1

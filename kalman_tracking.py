@@ -108,10 +108,11 @@ class KalmanFilter:
 		count = 0
 		for c in range(predicted_position[0]-search_radius_col, predicted_position[0] + search_radius_col + 1):
 			for r in range(predicted_position[1] - search_radius_row, predicted_position[1] + search_radius_row + 1 + self.extend):
-				if image[r,c] > 5:
-					sum_x += c
-					sum_y += r
-					count += 1
+				if 0 <= c < image.shape[1] and 0 <= r < image.shape[0]:
+					if image[r,c] > 5:
+						sum_x += c
+						sum_y += r
+						count += 1
 		if count > 2:
 			center_x = sum_x // count
 			center_y = sum_y // count
@@ -190,10 +191,10 @@ def choose_starting_pixels(images):
 
 
 #SAMPLE USAGE
-person = 'Sierra'
+person = 'Jake'
 stroke = 'Free'
 images_to_track = f'images/{person}/{stroke}/Filtered/Kalman'
-start_point = 107
+start_point = 96
 images_to_overlay = f'images/{person}/{stroke}'
 image_save_loc = f'images/{person}/{stroke}/Tracked/Kalman/'
 write_points_loc = f'results/{person}/{stroke}'
@@ -206,8 +207,8 @@ images = images[start_point:]
 #choose_starting_pixels(images)
 
 #ONCE POINTS ARE PICKED REPLACE
-s1 = np.array([[547,1022]])
-s2 = np.array([[547,1023]])
+s1 = np.array([[501,1030]])
+s2 = np.array([[501,1031]])
 
 sv_0, sigma_0, Q, R, Phi, H = initialize_Kalman_parameters(s1, s2)
 patch_size = 5

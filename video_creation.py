@@ -23,11 +23,14 @@ def create_video_kalman_arms(person, stroke):
 	video_name = f'results/{person}/{stroke}/Arms.mp4'
 	create_video(image_folder, video_name)
 
+def run_script(person, stroke):
+	create_video_kalman_arms(person, stroke)
+
 #SAMPLE USAGE
-person = 'Sierra'
-stroke = 'Free'
+# person = 'Sierra'
+# stroke = 'Free'
 # tracking_type = 'Kalman'
 # image_folder = f'images/{person}/{stroke}/Tracked/{tracking_type}'
 # video_name = f'results/{person}/{stroke}/{tracking_type}.mp4'
 # create_video(image_folder, video_name)
-create_video_kalman_arms(person, stroke)
+# create_video_kalman_arms(person, stroke)

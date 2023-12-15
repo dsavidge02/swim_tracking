@@ -83,9 +83,15 @@ def filter_all(images_to_filter, outer_path, inner_folder_kalman = 'Kalman', inn
 	filter_for_kalman(images_to_filter, outer_path, inner_folder_kalman)
 	filter_for_arm_tracking(images_to_filter, outer_path, inner_folder_arm)
 
-#SAMPLE USAGE
-person = 'Sierra'
-stroke = 'Free'
-images_to_filter = f'images/{person}/{stroke}'
-outer_path = f'images/{person}/{stroke}/Filtered'
-filter_all(images_to_filter, outer_path)
+#Run the entire script
+def run_script(person, stroke):
+	images_to_filter = f'images/{person}/{stroke}'
+	outer_path = f'images/{person}/{stroke}/Filtered'
+	filter_all(images_to_filter, outer_path)
+
+# #SAMPLE USAGE
+# person = 'Mike'
+# stroke = 'Free'
+# images_to_filter = f'images/{person}/{stroke}'
+# outer_path = f'images/{person}/{stroke}/Filtered'
+# filter_all(images_to_filter, outer_path)

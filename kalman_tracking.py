@@ -109,9 +109,10 @@ class KalmanFilter:
 		for c in range(predicted_position[0]-search_radius_col, predicted_position[0] + search_radius_col + 1):
 			for r in range(predicted_position[1] - search_radius_row, predicted_position[1] + search_radius_row + 1 + self.extend):
 				if 0 <= c < image.shape[1] and 0 <= r < image.shape[0]:
-					sum_x += c
-					sum_y += r
-					count += 1
+					if image[r,c] > 5:
+						sum_x += c
+						sum_y += r
+						count += 1
 		if count > 2:
 			center_x = sum_x // count
 			center_y = sum_y // count

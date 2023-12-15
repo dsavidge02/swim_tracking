@@ -325,14 +325,25 @@ def track_arms(filtered_folder_to_read, points_file_to_read, file_to_write, imag
 	all_angles, points = determine_angles(filtered_folder_to_read, points_file_to_read, file_to_write = file_to_write, start_point = start_point)
 	visualize_all_angles(image_folder_to_draw_on, image_folder_to_draw_to  = image_folder_to_draw_to, points = points, all_angles = all_angles, start_point = start_point)
 
+def run_script(person, stroke, start_point=None):
+	filtered_folder_to_read = f'images/{person}/{stroke}/Filtered/Arms'
+	points_file_to_read = f'results/{person}/{stroke}/kalman_points.txt'
+	file_to_write = f'results/{person}/{stroke}/arm_angles.txt'
+	image_folder_to_draw_on = f'images/{person}/{stroke}'
+	image_folder_to_draw_to = f'images/{person}/{stroke}/Tracked/Arms'
 
-#SAMPLE USAGE
-person = 'Sierra'
-stroke = 'Free'
-filtered_folder_to_read = f'images/{person}/{stroke}/Filtered/Arms'
-points_file_to_read = f'results/{person}/{stroke}/kalman_points.txt'
-file_to_write = f'results/{person}/{stroke}/arm_angles.txt'
-image_folder_to_draw_on = f'images/{person}/{stroke}'
-image_folder_to_draw_to = f'images/{person}/{stroke}/Tracked/Arms'
-start_point = 107
-track_arms(filtered_folder_to_read, points_file_to_read, file_to_write, image_folder_to_draw_on, image_folder_to_draw_to, start_point = start_point)
+	if start_point is None:
+		print("Please find a starting frame using Filtered Kalman images")
+		sys.exit()
+	track_arms(filtered_folder_to_read, points_file_to_read, file_to_write, image_folder_to_draw_on, image_folder_to_draw_to, start_point = start_point)
+
+# #SAMPLE USAGE
+# person = 'Sierra'
+# stroke = 'Free'
+# filtered_folder_to_read = f'images/{person}/{stroke}/Filtered/Arms'
+# points_file_to_read = f'results/{person}/{stroke}/kalman_points.txt'
+# file_to_write = f'results/{person}/{stroke}/arm_angles.txt'
+# image_folder_to_draw_on = f'images/{person}/{stroke}'
+# image_folder_to_draw_to = f'images/{person}/{stroke}/Tracked/Arms'
+# start_point = 107
+# track_arms(filtered_folder_to_read, points_file_to_read, file_to_write, image_folder_to_draw_on, image_folder_to_draw_to, start_point = start_point)

@@ -8,11 +8,13 @@ import video_creation
 
 if __name__ == '__main__':
 	# Inputs to change
-	person = "Mike"
+	person = "Hayden"
 	stroke = "Free"
-	start_point = 103
-	s1 = np.array([[584,1001]])
-	s2 = np.array([[584,1002]])
+	start_point = 112
+	# s1 = None
+	# s2 = None
+	s1 = np.array([[542,1035]])
+	s2 = np.array([[542,1036]])
 
 
 	# Creating subfolders
@@ -41,6 +43,9 @@ if __name__ == '__main__':
 
 	# Running each script
 	# filter_images.run_script(person, stroke)
-	# kalman_tracking.run_script(person, stroke, start_point, s1, s2)
-	# arm_tracking.run_script(person, stroke, start_point)
-	# video_creation.run_script(person, stroke)
+	print("Running Kalman Filtering")
+	kalman_tracking.run_script(person, stroke, start_point, s1, s2)
+	print("Running Arm Tracking")
+	arm_tracking.run_script(person, stroke, start_point)
+	print("Creating Videos")
+	video_creation.run_script(person, stroke)

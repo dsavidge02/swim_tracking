@@ -195,7 +195,7 @@ def run_script(person, stroke, start_point=None, s1=None, s2=None):
 	image_save_loc = f'images/{person}/{stroke}/Tracked/Kalman/'
 	write_points_loc = f'results/{person}/{stroke}'
 	images = read_images(images_to_track, extension = '.jpg', grayscale = True, unsorted = True)
-	if start_point == None:
+	if start_point is None:
 		print("Please find a starting frame using Filtered Kalman images")
 		sys.exit()
 	images = images[start_point:]

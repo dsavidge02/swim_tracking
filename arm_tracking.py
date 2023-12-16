@@ -214,10 +214,33 @@ def create_mask_from_components(labeled_image, components):
 def find_angle(head, arm):
 	x1, y1 = head
 	x2, y2 = arm
+	if arm[0] == -1 or arm[1] == -1:
+		return 0.0
 	adjacent = x2-x1
 	hypotenuse = math.sqrt((x2-x1)**2+(y2-y1)**2)
 	angle_rad = math.acos(adjacent/hypotenuse)
 	return angle_rad
+
+#Takes the list of angles and filters it for outliers
+#Returns an updated array of angles
+#-------------
+#angles - [left_angle, right_angle] angle measures in radians
+def update_angles(angles):
+	num_angles = len(angles)
+	for i in range(1, num_angles-1):
+		left_angle_prev,right_angle_prev = angles[i-1]
+		left_angle,right_angle = angles[i]
+		left_angle_post,right_angle_post = angles[i+1]
+		if not(1.5078 <= left_angle <=4.71239):
+			left_angle = 0.0
+		if not(right_angle <= 1.5078 or right_angle > 4.71239):
+			right_angle = 0.0
+		if left_angle_prev == 0.0 and left_angle_post == 0.0:
+			left_angle = 0.0
+		if right_angle_prev == 0.0 and right_angle_post == 0.0:
+			right_angle = 0.0
+		angles[i] = [left_angle,right_angle]
+	return angles
 
 #Takes an image and draws on it the lines between a point on the head and a point on the arms
 #Returns none
@@ -236,9 +259,9 @@ def draw_angles(image, start_point, angles, length=100, thickness=10, filename =
     right_end_y = start_point[1] - length * math.sin(right_angle)
 
     image_with_lines = image.copy()
-    if left_angle >= 1:
+    if left_angle != 0:
     	image_with_lines = cv2.line(image, start_point, (int(left_end_x), int(left_end_y)), (255, 0, 0), thickness)  # Blue line for left
-    if right_angle <= 2:
+    if right_angle != 0:
     	image_with_lines = cv2.line(image_with_lines, start_point, (int(right_end_x), int(right_end_y)), (0, 255, 0), thickness)  # Green line for right    
 
     if filename:
@@ -282,6 +305,7 @@ def determine_angles(filtered_folder_to_read, points_file_to_read, file_to_write
 	images = images[start_point:]
 	points = read_points_from_txt(points_file_to_read)
 	all_angles = find_angles(images, points)
+	all_angles = update_angles(all_angles)
 	if file_to_write:
 		write_angles(all_angles, file_to_write)
 	return all_angles, points
